@@ -42,10 +42,15 @@ addLight(0, 0, -100, 4); //back
 
 
 //Window size (width and height)
-const sizes = {
-    width: window.innerWidth,
-    height: window.innerHeight
+let sizes;
+function screenSize(){
+    sizes = {
+        width: window.innerWidth * 0.9,
+        height: window.innerHeight * 0.75
+    }
 }
+
+screenSize();
 
 //Set the Camera + Position
 const camera = new THREE.PerspectiveCamera(45, sizes.width/sizes.height, 1, 10000);
@@ -66,7 +71,7 @@ const controls = new OrbitControls(camera, renderer.domElement);
 controls.update();
 
 //Animation
-let runAnimation = false;
+let animationActive = false;
 let mixer;
 //load animation
 function loadAnimation(animationName, loop){
@@ -82,27 +87,45 @@ function loadAnimation(animationName, loop){
         }
         action.play();
 
-        runAnimation = true;
-    } else {
-        setTimeout(function(){
-            loadAnimation(animationName, loop);
-        }, 1000); 
+        animationActive = true;
+        return mixer;
     }
 }
 
-loadAnimation("Open", false); //without loop animation
+let longClockHandAnimation;
+let shortClockHandAnimation;
 
-function updateAnimation(deltaTime) {
-    if(runAnimation){
-        mixer.update(deltaTime);
+function createAnimations() {
+    if(!animationActive){
+        longClockHandAnimation = loadAnimation("Gross Zeiger", true); //with loop animation
+        shortClockHandAnimation = loadAnimation("Klein Zeiger", true); //with loop animation
     }
 }
 
-//update function
+function runLongClockHandAnimation(deltaTime){
+    if(animationActive){
+        longClockHandAnimation.update(deltaTime);
+    }
+}
+
+function runShortClockHandAnimation(deltaTime){
+    if(animationActive){
+        shortClockHandAnimation.update(deltaTime);
+    }
+}
+
+//animation speed
+let deltaTime = 0.005;
+
+//update function (main loop)
 function update() {
     requestAnimationFrame(update);
+    screenSize();
+    renderer.setSize(sizes.width, sizes.height);
     controls.update();
-    updateAnimation(0.01);
+    createAnimations();
+    runLongClockHandAnimation(deltaTime);
+    runShortClockHandAnimation(deltaTime);
     renderer.render(scene, camera);
 }
 
