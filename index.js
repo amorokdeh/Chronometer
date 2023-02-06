@@ -125,7 +125,7 @@ function update() {
     controls.update();
     createAnimations();
     runLongClockHandAnimation(deltaTime);
-    runShortClockHandAnimation(deltaTime);
+    runShortClockHandAnimation(deltaTime/12);
     renderer.render(scene, camera);
 }
 
