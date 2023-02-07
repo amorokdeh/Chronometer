@@ -5,7 +5,7 @@ import {OrbitControls} from "./three.js-master/examples/jsm/controls/OrbitContro
 //Canvas with Background
 const canvas = document.querySelector(".webgl");
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0xdddddd);
+scene.background = new THREE.Color(0x000000);
 
 //Load the 3d Object (GLB)
 const loader = new GLTFLoader();
@@ -45,8 +45,8 @@ addLight(0, 0, -100, 4); //back
 let sizes;
 function screenSize(){
     sizes = {
-        width: window.innerWidth * 0.9,
-        height: window.innerHeight * 0.75
+        width: window.innerWidth * 0.5,
+        height: window.innerHeight * 0.7
     }
 }
 
@@ -59,7 +59,8 @@ scene.add(camera);
 
 //set the renderer
 const renderer = new THREE.WebGL1Renderer({
-    canvas: canvas
+    canvas: canvas,
+    alpha: true
 })
 renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));

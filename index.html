@@ -7,8 +7,31 @@
         <title>3D Model Chronometer</title>
     </head>
     <body>
-        <h1>3D Model Chronometer</h1>
-        <canvas class="webgl"></canvas>
+        <div id="background">
+            <h1>3D Model Chronometer</h1>
+            <div id="container">
+                <div id="info">
+                    <h2>Info</h2>
+                    <div id="infoText">
+                        <p>Text info....</p>
+                    </div>
+                </div>
+                <canvas class="webgl"></canvas>
+                <div id="buttonsList">
+                    <h2>Effects</h2>
+                    <button id="open">open</button>
+                    <button id="close">close</button>
+                    <button id="assemble">assemble</button>
+                    <button id="unassemble">unassemble</button>
+                    <button id="currentTime">current time</button>
+                    <button id="timeReset">reset</button>
+                    <br>
+                    <input type="time" name="time">
+                    <br>
+                    <button id="setTime">set</button>
+                </div>
+            </div>
+        </div>
         <script type="module" src="index.js"></script>
     </body>
 </html>
