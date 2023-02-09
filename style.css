@@ -56,7 +56,9 @@ h1 {
     position: relative;
     text-align: center;
     text-transform: uppercase;
-    color: #4CAF50;
+    color: #ff7200;
+    background: linear-gradient(to top, rgba(0,0,0,0.8)50%,rgba(0,0,0,0.8)50%);
+    padding: 10px;
   }
   
   #container {
