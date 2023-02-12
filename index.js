@@ -45,7 +45,7 @@ addLight(0, 0, -100, 4); //back
 let sizes;
 function screenSize(){
     sizes = {
-        width: window.innerWidth * 0.5,
+        width: window.innerWidth,
         height: window.innerHeight * 0.7
     }
 }
