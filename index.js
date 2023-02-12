@@ -73,6 +73,7 @@ controls.update();
 
 //Animation
 let animationActive = false;
+let animationClock = false;
 let mixer;
 //load animation
 function loadAnimation(animationName, loop){
@@ -104,16 +105,71 @@ function createAnimations() {
 }
 
 function runLongClockHandAnimation(deltaTime){
-    if(animationActive){
+    if(animationClock){
         longClockHandAnimation.update(deltaTime);
     }
 }
 
 function runShortClockHandAnimation(deltaTime){
-    if(animationActive){
+    if(animationClock){
         shortClockHandAnimation.update(deltaTime);
     }
 }
+
+const buttons = [
+    { id: 1, label: "Animation 1", onClick: function() {animationClock = true} },
+    { id: 2, label: "Animation 2", onClick: function() { /* Your code for animation 2 / } },
+    { id: 3, label: "Animation 3", onClick: function() { / Your code for animation 3 / } },
+    { id: 4, label: "Animation 4", onClick: function() { / Your code for animation 3 / } },
+    { id: 5, label: "Animation 5", onClick: function() { / Your code for animation 3 / } },
+    { id: 6, label: "Animation 6", onClick: function() { / Your code for animation 3 */ } },
+    // ... and so on for each button
+  ];
+
+  const buttonContainer = document.querySelector("#button-container");
+  const prevButton = document.querySelector("#prev-button");
+  const nextButton = document.querySelector("#next-button");
+
+  let currentButtonIndex = 0;
+
+  const handleButtonClick = (event) => {
+    const button = buttons.find(b => b.label === event.target.innerHTML);
+    if (button) {
+      button.onClick();
+    }
+  };
+
+  const renderButtons = () => {
+    buttonContainer.innerHTML = "";
+    buttons.forEach((button, index) => {
+      const btn = document.createElement("button");
+      btn.innerHTML = button.label;
+      btn.addEventListener("click", handleButtonClick);
+      buttonContainer.appendChild(btn);
+
+      if (index >= currentButtonIndex && index < currentButtonIndex + 3) {
+        btn.style.display = "inline-block";
+      } else {
+        btn.style.display = "none";
+      }
+    });
+  };
+
+  prevButton.addEventListener("click", () => {
+    if (currentButtonIndex > 0) {
+      currentButtonIndex--;
+      renderButtons();
+    }
+  });
+
+  nextButton.addEventListener("click", () => {
+    if (currentButtonIndex < buttons.length - 3) {
+      currentButtonIndex++;
+      renderButtons();
+    }
+  });
+
+  renderButtons();
 
 //animation speed
 let deltaTime = 0.005;
