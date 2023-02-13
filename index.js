@@ -73,7 +73,18 @@ controls.update();
 
 //Animation
 let animationActive = false;
-let animationClock = false;
+//let animationClock = false;
+let animationCurrentTimeActive = false;
+let animationOpenActive = false;
+let animationCloseActive = false;
+let animationAssemblingActive = false;
+let animationUnassemblingActive = false;
+let animationSettimeActive = false;
+let animationGearsActive = false;
+let animationRingActive = false;
+
+
+
 let mixer;
 //load animation
 function loadAnimation(animationName, loop){
@@ -94,37 +105,167 @@ function loadAnimation(animationName, loop){
     }
 }
 
-let longClockHandAnimation;
-let shortClockHandAnimation;
+let longClockHand;
+let shortClockHand;
+let firstBlueGear;
+let secondBlueGear;
+let cyanblueGear;
+let firstGreenGear;
+let secondGreenGear;
+let lilaGear;
+let firstBlackGear;
+let secondblackGear;
+let rotGear;
+let open;
+let close;
+let ring;
 
 function createAnimations() {
     if(!animationActive){
-        longClockHandAnimation = loadAnimation("Gross Zeiger", true); //with loop animation
-        shortClockHandAnimation = loadAnimation("Klein Zeiger", true); //with loop animation
+        longClockHand = loadAnimation("Gross Zeiger", true); //with loop animation
+        shortClockHand = loadAnimation("Klein Zeiger", true);
+        firstBlueGear = loadAnimation("Blau Zahn 1", true); //with loop animation
+        secondBlueGear = loadAnimation("Blau Zahn 2", true); //with loop animation
+        cyanblueGear = loadAnimation("Cyanblau Zahn", true); //with loop animation
+        firstGreenGear = loadAnimation("Gruen Zahn", true); //with loop animation
+        secondGreenGear = loadAnimation("Gruen Zahn 2", true); //with loop animation
+        lilaGear = loadAnimation("Lila Zahn", true); //with loop animation
+        firstBlackGear = loadAnimation("Schwarz Zahn", true); //with loop animation
+        secondblackGear = loadAnimation("Schwarz Zahn 2", true); //with loop animation
+        rotGear = loadAnimation("Rot Zahn", true); //with loop animation
+        open = loadAnimation("Open", false);
+        close = loadAnimation("Close", false);
+        ring = loadAnimation("Ring", false); 
     }
 }
 
-function runLongClockHandAnimation(deltaTime){
-    if(animationClock){
-        longClockHandAnimation.update(deltaTime);
+function calculateAnimationTime(){
+    let currDate = new Date();
+    let hours = currDate.getHours();
+    let minutes = currDate.getMinutes();
+    if(hours > 12){
+        hours -= 12;
+    }
+    return (animationDuration * hours) + (animationDuration * minutes / 60);
+}
+
+function runCurrentTime(deltaTime){
+    if(animationCurrentTimeActive){
+        longClockHand.update(deltaTime);
+        shortClockHand.update(deltaTime/12);
+
+        let calculatedanimationTime = calculateAnimationTime();
+
+        //stop animation on time
+        setTimeout(function(){
+            animationCurrentTimeActive = false;
+            longClockHand = loadAnimation("Gross Zeiger", true); //with loop animation
+            shortClockHand = loadAnimation("Klein Zeiger", true);
+        }, calculatedanimationTime);
     }
 }
 
-function runShortClockHandAnimation(deltaTime){
-    if(animationClock){
-        shortClockHandAnimation.update(deltaTime);
-    }
+function runOpen(deltaTime){
+  if(animationOpenActive){
+      open.update(deltaTime);
+
+      setTimeout(function(){
+        animationOpenActive = false;
+        open = loadAnimation("Open", false);
+    }, animationDuration);
+  }
+}
+function runClose(deltaTime){
+  if(animationCloseActive){
+      close.update(deltaTime);
+
+      setTimeout(function(){
+        animationCloseActive = false;
+        close = loadAnimation("Close", false);
+    }, animationDuration);
+  }
+}
+
+function runAssembling(deltaTime){
+  if(animationAssemblingActive){
+      longClockHand.update(deltaTime);
+  }
+}
+
+function runUnassembling(deltaTime){
+  if(animationUnassemblingActive){
+      longClockHand.update(deltaTime);
+      shortClockHand.update(deltaTime/12);
+  }
+}
+
+function runGears(deltaTime){ //dont forget the speed
+  if(animationGearsActive){
+      firstBlueGear.update(deltaTime);
+      secondBlueGear.update(deltaTime);
+      cyanblueGear.update(deltaTime);
+      firstGreenGear.update(deltaTime);
+      secondGreenGear.update(deltaTime);
+      lilaGear.update(deltaTime);
+      firstBlackGear.update(deltaTime);
+      secondblackGear.update(deltaTime);
+      rotGear.update(deltaTime);
+  }
+}
+
+function runRing(deltaTime){  // dont forget it
+  if(animationRingActive){
+    ring.update(deltaTime);
+
+    setTimeout(function(){
+      animationRingActive = false;
+      ring = loadAnimation("Ring", false);
+  }, animationDuration);
+  }
+}
+
+function runSetTime(deltaTime){
+  if(animationSettimeActive){
+      longClockHand.update(deltaTime);
+      shortClockHand.update(deltaTime/12);
+  }
 }
 
 const buttons = [
-    { id: 1, label: "Animation 1", onClick: function() {animationClock = true} },
-    { id: 2, label: "Animation 2", onClick: function() { /* Your code for animation 2 / } },
-    { id: 3, label: "Animation 3", onClick: function() { / Your code for animation 3 / } },
-    { id: 4, label: "Animation 4", onClick: function() { / Your code for animation 3 / } },
-    { id: 5, label: "Animation 5", onClick: function() { / Your code for animation 3 / } },
-    { id: 6, label: "Animation 6", onClick: function() { / Your code for animation 3 */ } },
-    // ... and so on for each button
+    { id: 1, label: "current time", active: true, onClick: function() { animationCurrentTimeActive = true; blockButtonsWithTimer(["current time"], true, calculateAnimationTime());}},
+    { id: 2, label: "open", active: false, onClick: function() { animationOpenActive = true; blockButtonsWithTimer(["close", "assembling"], true, animationDuration); blockButtonsWithTimer(["open"], false, animationDuration)}},
+    { id: 3, label: "close", active: true, onClick: function() { animationCloseActive = true; blockButtonsWithTimer(["open"], true, animationDuration); blockButtonsWithTimer(["close", "assembling", "unassembling"], false, animationDuration);}},
+    { id: 4, label: "assembling", active: true, onClick: function() { animationAssemblingActive = true; blockButtonsWithTimer(["open", "close", "assembling"], false, animationDuration); blockButtonsWithTimer(["unassembling"], true, animationDuration);}},
+    { id: 5, label: "unassembling", active: false, onClick: function() { animationUnassemblingActive = true; blockButtonsWithTimer(["close", "assembling"], true, animationDuration); blockButtonsWithTimer(["unassembling"], false, animationDuration);}},
+    { id: 6, label: "gears", active: true, onClick: function() { animationGearsActive = true;}},
+    { id: 7, label: "ring", active: true, onClick: function() { animationRingActive = true; blockButtonsWithTimer(["ring"], true, animationDuration);}},
+    { id: 8, label: "set time", active: true, onClick: function() { animationSettimeActive = true;}}
   ];
+
+  function blockButtonsWithTimer(buttonNames, useTimerToUnblock, manuelTime){
+    buttonNames.forEach((btn) =>{
+        buttons.forEach((button) => {
+            if(button.label == btn){
+                button.active = false;
+                renderButtons();
+            }
+        });
+    });
+
+    //timer to unblock
+    if(useTimerToUnblock){
+        setTimeout(function(){
+            buttonNames.forEach((btn) =>{
+                buttons.forEach((button) => {
+                    if(button.label == btn){
+                        button.active = true;
+                        renderButtons();
+                    }
+                });
+            });
+        }, manuelTime);
+    }
+  }
 
   const buttonContainer = document.querySelector("#button-container");
   const prevButton = document.querySelector("#prev-button");
@@ -134,7 +275,7 @@ const buttons = [
 
   const handleButtonClick = (event) => {
     const button = buttons.find(b => b.label === event.target.innerHTML);
-    if (button) {
+    if (button && button.active) {
       button.onClick();
     }
   };
@@ -151,6 +292,10 @@ const buttons = [
         btn.style.display = "inline-block";
       } else {
         btn.style.display = "none";
+      }
+
+      if(!button.active){
+        btn.className = "unactiveButton";
       }
     });
   };
@@ -172,7 +317,8 @@ const buttons = [
   renderButtons();
 
 //animation speed
-let deltaTime = 0.005;
+let deltaTime = 0.03;
+let animationDuration = 41.4 / deltaTime;
 
 //update function (main loop)
 function update() {
@@ -181,8 +327,14 @@ function update() {
     renderer.setSize(sizes.width, sizes.height);
     controls.update();
     createAnimations();
-    runLongClockHandAnimation(deltaTime);
-    runShortClockHandAnimation(deltaTime/12);
+    runCurrentTime(deltaTime);
+    runOpen(deltaTime);
+    runClose(deltaTime);
+    runAssembling(deltaTime);
+    runUnassembling(deltaTime);
+    runGears(deltaTime);
+    runRing(deltaTime)
+    runSetTime(deltaTime);
     renderer.render(scene, camera);
 }
 

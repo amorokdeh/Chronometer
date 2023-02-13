@@ -1,6 +1,7 @@
 body{
   font-family:sans-serif;
   margin: 0%;
+  background-color:rgb(135, 135, 135);
 }
 
 #button-container {
@@ -13,63 +14,82 @@ justify-content: center;
 #page-nav {
 display: flex;
 justify-content: center;
-margin-top: 40%;
+margin-top: 35%;
 }
+
 button {
 padding: 10px 20px;
 margin: 10px;
 border-radius: 5px;
-border: 1px solid black;
+background-color:rgb(0, 0, 0);
+color: chocolate;
+border: 1px solid chocolate;
+width: 200px;
+height: 50px;
+text-align: center;
+font-size: 16px;
 }
+button:hover{
+background-color:chocolate;
+border: 1px solid rgb(0, 0, 0);
+color: white;
+}
+
+.unactiveButton {
+  padding: 10px 20px;
+  margin: 10px;
+  color: black;
+  border-radius: 5px;
+  border: 1px solid black;
+  background-color:rgb(135, 135, 135);
+  width: 200px;
+  height: 50px;
+  text-align: center;
+  font-size: 16px;
+  }
+
+  .unactiveButton:hover{
+    background-color:rgb(135, 135, 135);
+    border: 1px solid black;
+    color: black;
+  }
 
 #canvas {
 position: absolute;
 top: 0;
 left: 0;
 width: 100%;
-height:75%;
+height:70%;
 border: 1px solid black;
 }
 
-.hidden{
-display: none;
+
+#inputSetTime{
+justify-content: center;
+display: flex;
+align-items: center;
 }
-
-
-h1 {
-  position: relative;
-  text-align: center;
-  text-transform: uppercase;
-  color: #ff7200;
-  background: linear-gradient(to top, rgba(0,0,0,0.8)50%,rgba(0,0,0,0.8)50%);
-  padding: 10px;
-}
-
-
-#setTime{
-  position: relative;
-  float:none;
-  width: 250px;
-  margin: none;
-  margin-top: 15px;
-
-}
-
 
 input[type="time"]{
   position: relative;
-  margin-top: 70px;
+  margin-top: 20px;
   padding: 10px 15px;
+  background-color:rgb(135, 135, 135);
   border-radius: 10px;
+  border: 1px solid black;
   font-size: 1.2em;
   font-family: sans-serif;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
   transition: all 0.2s ease-in-out;
   width: 260px;
+  justify-content: center;
+  display: flex;
+  align-items: center;
+
 }
 
 input[type="time"]:focus {
   background-color: rgb(189, 189, 189);
-  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 6px 8px rgba(210, 105, 30, 0.3);
   outline: none;
 }
