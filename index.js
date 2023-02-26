@@ -156,7 +156,7 @@ function calculateAnimationTime(){
     if(hours > 12){
         hours -= 12;
     }
-    return (animationDuration * hours) + (animationDuration * minutes / 60);
+    return ((hours) + (minutes / 60)) * animationDuration;
 }
 
 function runCurrentTime(deltaTime){
@@ -198,10 +198,13 @@ function runClose(deltaTime){
 
 function runAssembling(){
   if(animationAssemblingActive){
-    upperUnassemble = loadAnimation("upper_unass", false); 
-    lowerUnassemble = loadAnimation("lower _unass", false); 
-    ringPos = loadAnimation("ring_position", false); 
-    clockBox = loadAnimation("uhr_box", false);
+      upperUnassemble.update(deltaTime);
+      lowerUnassemble.update(deltaTime);
+      ringPos.update(deltaTime);
+      clockBox.update(deltaTime);
+    setTimeout(function(){
+      animationAssemblingActive = false;
+    }, 0);
   }
 }
 
@@ -211,6 +214,14 @@ function runUnassembling(deltaTime){
       lowerUnassemble.update(deltaTime);
       ringPos.update(deltaTime);
       clockBox.update(deltaTime);
+
+      setTimeout(function(){
+        animationUnassemblingActive = false;
+        upperUnassemble = loadAnimation("upper_unass", false); 
+        lowerUnassemble = loadAnimation("lower _unass", false); 
+        ringPos = loadAnimation("ring_position", false); 
+        clockBox = loadAnimation("uhr_box", false);
+        }, animationDuration);
   }
 }
 
@@ -247,16 +258,8 @@ function runSetTime(deltaTime){
     longClockHand.update(deltaTime);
     shortClockHand.update(deltaTime/12);
 
-    let time = getInputValue("time");
-
-    let hoursStr = time.charAt(0) + time.charAt(1);
-    let minutesStr = time.charAt(0) + time.charAt(1);
-    let hours = parseInt(hoursStr);
-    let minutes = parseInt(minutesStr);
-    if(hours > 12){
-        hours -= 12;
-    }
-    let calculatedanimationTime = (animationDuration * hours) + (animationDuration * minutes / 60);
+    
+    let calculatedanimationTime = calculateSetTimeAnime();
 
     //stop animation on time
     setTimeout(function(){
@@ -267,15 +270,51 @@ function runSetTime(deltaTime){
   }
 }
 
+function calculateSetTimeAnime(){
+  let time = getInputValue("time");
+
+    let hoursStr = time.charAt(0) + time.charAt(1);
+    let minutesStr = time.charAt(3) + time.charAt(4);
+    let hours = parseInt(hoursStr);
+    let minutes = parseInt(minutesStr);
+    if(hours > 12){
+        hours -= 12;
+    }
+    return (hours + (minutes / 60)) * animationDuration;
+}
+
+function doGearsAnime(){
+  if(animationGearsActive){
+    animationGearsActive = false;
+    blockButtonsWithTimer(["current time", "set time"], true, animationDuration);
+    longClockHand = loadAnimation("Gross Zeiger", true);
+    shortClockHand = loadAnimation("Klein Zeiger", true);
+    buttons.forEach((button) => {
+      if(button.label == "stop gears"){
+        button.label = "run gears";
+          renderButtons();
+      }
+    });
+  } else {
+    animationGearsActive = true;
+    buttons.forEach((button) => {
+      if(button.label == "run gears"){
+        button.label = "stop gears";
+          renderButtons();
+      }
+    });
+  }
+}
+
 const buttons = [
-    { id: 1, label: "current time", active: true, onClick: function() { animationCurrentTimeActive = true; blockButtonsWithTimer(["current time"], true, calculateAnimationTime());}},
+    { id: 1, label: "current time", active: true, onClick: function() { animationCurrentTimeActive = true; blockButtonsWithTimer(["current time", "set time", "run gears"], true, calculateAnimationTime());}},
     { id: 2, label: "open", active: false, onClick: function() { animationOpenActive = true; blockButtonsWithTimer(["close", "assembling"], true, animationDuration); blockButtonsWithTimer(["open"], false, animationDuration)}},
     { id: 3, label: "close", active: true, onClick: function() { animationCloseActive = true; blockButtonsWithTimer(["open"], true, animationDuration); blockButtonsWithTimer(["close", "assembling", "unassembling"], false, animationDuration);}},
-    { id: 4, label: "assembling", active: false, onClick: function() { animationAssemblingActive = true; blockButtonsWithTimer(["open", "close", "assembling"], false, animationDuration); blockButtonsWithTimer(["unassembling"], true, animationDuration);}},
-    { id: 5, label: "unassembling", active: true, onClick: function() { animationUnassemblingActive = true; blockButtonsWithTimer(["close", "assembling"], true, animationDuration); blockButtonsWithTimer(["unassembling"], false, animationDuration);}},
-    { id: 6, label: "gears", active: true, onClick: function() { animationGearsActive = true;}},
+    { id: 4, label: "assembling", active: false, onClick: function() { animationAssemblingActive = true; blockButtonsWithTimer(["assembling"], false, animationDuration); blockButtonsWithTimer(["open", "close", "unassembling"], true, animationDuration);}},
+    { id: 5, label: "unassembling", active: true, onClick: function() { animationUnassemblingActive = true; blockButtonsWithTimer(["assembling"], true, animationDuration); blockButtonsWithTimer(["open", "close", "unassembling"], false, animationDuration);}},
+    { id: 6, label: "run gears", active: true, onClick: function() { doGearsAnime(); blockButtonsWithTimer(["current time", "set time"], false, animationDuration);}},
     { id: 7, label: "ring", active: true, onClick: function() { animationRingActive = true; blockButtonsWithTimer(["ring"], true, animationDuration);}},
-    { id: 8, label: "set time", active: true, onClick: function() { animationSettimeActive = true;}}
+    { id: 8, label: "set time", active: true, onClick: function() { animationSettimeActive = true; blockButtonsWithTimer(["current time", "set time", "run gears"], true, calculateSetTimeAnime())}}
   ];
 
   function blockButtonsWithTimer(buttonNames, useTimerToUnblock, manuelTime){
@@ -354,7 +393,6 @@ const buttons = [
     const inputElement = document.getElementsByName(name)[0];
   // Get the value of the input element
   const inputValue = inputElement.value;
-  console.log(inputValue);
   return inputValue;
   }
 
@@ -362,7 +400,7 @@ const buttons = [
 
 //animation speed
 let deltaTime = 0.03;
-let animationDuration = 41 / deltaTime;
+let animationDuration = 41.6 / deltaTime;
 
 //update function (main loop)
 function update() {
