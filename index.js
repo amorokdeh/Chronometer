@@ -33,12 +33,12 @@ function addLight(x, y, z, power){
 }
 
 //Add lights
-addLight(100, 0, 0, 3); //right
-addLight(-100, 0, 0, 4); //left
-addLight(0, 100, 0, 3); //up
+addLight(100, 0, 0, 2); //right
+addLight(-100, 0, 0, 3); //left
+addLight(0, 100, 0, 2); //up
 addLight(0, -100, 0, 2); //down
 addLight(0, 0, 100, 3); //front
-addLight(0, 0, -100, 4); //back
+addLight(0, 0, -100, 2); //back
 
 
 //Window size (width and height)
@@ -73,7 +73,6 @@ controls.update();
 
 //Animation
 let animationActive = false;
-//let animationClock = false;
 let animationCurrentTimeActive = false;
 let animationOpenActive = false;
 let animationCloseActive = false;
@@ -82,6 +81,7 @@ let animationUnassemblingActive = false;
 let animationSettimeActive = false;
 let animationGearsActive = false;
 let animationRingActive = false;
+let animationMoveCaseActive = false;
 
 
 
@@ -124,6 +124,10 @@ let clockBox;
 let open;
 let close;
 let ring;
+let lowerRotation;
+let upperRotation;
+let ringLowerRotaion;
+
 
 function createAnimations() {
     if(!animationActive){
@@ -145,7 +149,10 @@ function createAnimations() {
         upperUnassemble = loadAnimation("upper_unass", false); 
         lowerUnassemble = loadAnimation("lower _unass", false); 
         ringPos = loadAnimation("ring_position", false); 
-        clockBox = loadAnimation("uhr_box", false); 
+        clockBox = loadAnimation("uhr_box", false);
+        lowerRotation = loadAnimation("lower rotation", false);
+        upperRotation = loadAnimation("upper rotation", false);
+        ringLowerRotaion = loadAnimation("ring lower rotation", false);
     }
 }
 
@@ -249,7 +256,8 @@ function runRing(deltaTime){  // dont forget it
     setTimeout(function(){
       animationRingActive = false;
       ring = loadAnimation("ring", false);
-  }, animationDuration);
+      ring.update(deltaTime);
+    }, animationDuration);
   }
 }
 
@@ -271,8 +279,7 @@ function runSetTime(deltaTime){
 }
 
 function calculateSetTimeAnime(){
-  let time = getInputValue("time");
-
+    let time = getInputValue("time");
     let hoursStr = time.charAt(0) + time.charAt(1);
     let minutesStr = time.charAt(3) + time.charAt(4);
     let hours = parseInt(hoursStr);
@@ -281,6 +288,24 @@ function calculateSetTimeAnime(){
         hours -= 12;
     }
     return (hours + (minutes / 60)) * animationDuration;
+}
+
+function moveCase(deltaTime){
+  if(animationMoveCaseActive){
+    lowerRotation.update(deltaTime);
+    upperRotation.update(deltaTime);
+    ringLowerRotaion.update(deltaTime);
+
+    setTimeout(function(){
+      animationMoveCaseActive = false;
+      lowerRotation = loadAnimation("lower rotation", false);
+      upperRotation = loadAnimation("upper rotation", false);
+      ringLowerRotaion = loadAnimation("ring lower rotation", false);
+      lowerRotation.update(deltaTime);
+      upperRotation.update(deltaTime);
+      ringLowerRotaion.update(deltaTime);
+    }, animationDuration);
+  }
 }
 
 function doGearsAnime(){
@@ -308,13 +333,14 @@ function doGearsAnime(){
 
 const buttons = [
     { id: 1, label: "current time", active: true, onClick: function() { animationCurrentTimeActive = true; blockButtonsWithTimer(["current time", "set time", "run gears"], true, calculateAnimationTime());}},
-    { id: 2, label: "open", active: false, onClick: function() { animationOpenActive = true; blockButtonsWithTimer(["close", "assembling"], true, animationDuration); blockButtonsWithTimer(["open"], false, animationDuration)}},
-    { id: 3, label: "close", active: true, onClick: function() { animationCloseActive = true; blockButtonsWithTimer(["open"], true, animationDuration); blockButtonsWithTimer(["close", "assembling", "unassembling"], false, animationDuration);}},
-    { id: 4, label: "assembling", active: false, onClick: function() { animationAssemblingActive = true; blockButtonsWithTimer(["assembling"], false, animationDuration); blockButtonsWithTimer(["open", "close", "unassembling"], true, animationDuration);}},
-    { id: 5, label: "unassembling", active: true, onClick: function() { animationUnassemblingActive = true; blockButtonsWithTimer(["assembling"], true, animationDuration); blockButtonsWithTimer(["open", "close", "unassembling"], false, animationDuration);}},
+    { id: 2, label: "open", active: false, onClick: function() { animationOpenActive = true; blockButtonsWithTimer(["close", "unassembling", "move case"], true, animationDuration); blockButtonsWithTimer(["open"], false, animationDuration)}},
+    { id: 3, label: "close", active: true, onClick: function() { animationCloseActive = true; blockButtonsWithTimer(["open"], true, animationDuration); blockButtonsWithTimer(["close", "assembling", "unassembling", "move case"], false, animationDuration);}},
+    { id: 4, label: "assembling", active: false, onClick: function() { animationAssemblingActive = true; blockButtonsWithTimer(["assembling"], false, animationDuration); blockButtonsWithTimer(["close", "unassembling", "move case"], true, animationDuration);}},
+    { id: 5, label: "unassembling", active: true, onClick: function() { animationUnassemblingActive = true; blockButtonsWithTimer(["assembling"], true, animationDuration); blockButtonsWithTimer(["open", "close", "unassembling", "ring", "move case"], false, animationDuration);}},
     { id: 6, label: "run gears", active: true, onClick: function() { doGearsAnime(); blockButtonsWithTimer(["current time", "set time"], false, animationDuration);}},
     { id: 7, label: "ring", active: true, onClick: function() { animationRingActive = true; blockButtonsWithTimer(["ring"], true, animationDuration);}},
-    { id: 8, label: "set time", active: true, onClick: function() { animationSettimeActive = true; blockButtonsWithTimer(["current time", "set time", "run gears"], true, calculateSetTimeAnime())}}
+    { id: 8, label: "move case", active: true, onClick: function() { animationMoveCaseActive = true; blockButtonsWithTimer(["current time", "set time", "run gears"], true, animationDuration)}},
+    { id: 9, label: "set time", active: true, onClick: function() { animationSettimeActive = true; blockButtonsWithTimer(["current time", "set time", "run gears"], true, calculateSetTimeAnime())}}
   ];
 
   function blockButtonsWithTimer(buttonNames, useTimerToUnblock, manuelTime){
@@ -416,6 +442,7 @@ function update() {
     runUnassembling(deltaTime);
     runGears(deltaTime);
     runRing(deltaTime)
+    moveCase(deltaTime);
     runSetTime(deltaTime);
     renderer.render(scene, camera);
 }
