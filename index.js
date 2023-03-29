@@ -5,7 +5,7 @@ import {OrbitControls} from "./three.js-master/examples/jsm/controls/OrbitContro
 //Canvas with Background
 const canvas = document.querySelector(".webgl");
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x000000);
+scene.background = new THREE.Color(0xE7E7E7);
 
 //Load the 3d Object (GLB)
 const loader = new GLTFLoader();
@@ -45,8 +45,8 @@ addLight(0, 0, -100, 2); //back
 let sizes;
 function screenSize(){
     sizes = {
-        width: window.innerWidth,
-        height: window.innerHeight * 0.7
+        width: window.innerWidth * 99 / 100,
+        height: window.innerHeight * 99 / 100
     }
 }
 
@@ -127,6 +127,8 @@ let ring;
 let lowerRotation;
 let upperRotation;
 let ringLowerRotaion;
+let upperUpDown;
+let lowerUpDown;
 
 
 function createAnimations() {
@@ -153,6 +155,9 @@ function createAnimations() {
         lowerRotation = loadAnimation("lower rotation", false);
         upperRotation = loadAnimation("upper rotation", false);
         ringLowerRotaion = loadAnimation("ring lower rotation", false);
+        upperUpDown = loadAnimation("upperUpDown", false);
+        lowerUpDown = loadAnimation("lowerUpDown", false);
+
     }
 }
 
@@ -234,29 +239,33 @@ function runUnassembling(deltaTime){
 
 function runGears(deltaTime){ //dont forget the speed
   if(animationGearsActive){
-      firstBlueGear.update(deltaTime / 16);
-      secondBlueGear.update(deltaTime / 32);
-      cyanblueGear.update(deltaTime);
-      firstGreenGear.update(deltaTime);
-      secondGreenGear.update(deltaTime / 16);
-      lilaGear.update(deltaTime / 8);
-      firstBlackGear.update(deltaTime / 16);
-      secondblackGear.update(deltaTime / 4);
-      rotGear.update(deltaTime / 32);
-      hemmung.update(deltaTime);
-      longClockHand.update(deltaTime / 16);
-      shortClockHand.update(deltaTime/(12 * 16));
+      let gearsSpeed = deltaTime / 3;
+      firstBlueGear.update(gearsSpeed / 16);
+      secondBlueGear.update(gearsSpeed / 32);
+      cyanblueGear.update(gearsSpeed);
+      firstGreenGear.update(gearsSpeed);
+      secondGreenGear.update(gearsSpeed / 16);
+      lilaGear.update(gearsSpeed / 8);
+      firstBlackGear.update(gearsSpeed / 16);
+      secondblackGear.update(gearsSpeed / 4);
+      rotGear.update(gearsSpeed / 500);
+      hemmung.update(gearsSpeed);
+      longClockHand.update(gearsSpeed / 16);
+      shortClockHand.update(gearsSpeed/(12 * 16));
   }
 }
 
 function runRing(deltaTime){  // dont forget it
   if(animationRingActive){
-    ring.update(deltaTime);
+    upperUpDown.update(deltaTime);
+    lowerUpDown.update(deltaTime);
 
     setTimeout(function(){
       animationRingActive = false;
-      ring = loadAnimation("ring", false);
-      ring.update(deltaTime);
+      upperUpDown = loadAnimation("upperUpDown", false);
+      lowerUpDown = loadAnimation("lowerUpDown", false);
+      upperUpDown.update(deltaTime);
+      lowerUpDown.update(deltaTime);
     }, animationDuration);
   }
 }
@@ -333,15 +342,16 @@ function doGearsAnime(){
 
 const buttons = [
     { id: 1, label: "current time", active: true, onClick: function() { animationCurrentTimeActive = true; blockButtonsWithTimer(["current time", "set time", "run gears"], true, calculateAnimationTime());}},
-    { id: 2, label: "open", active: false, onClick: function() { animationOpenActive = true; blockButtonsWithTimer(["close", "unassembling", "move case"], true, animationDuration); blockButtonsWithTimer(["open"], false, animationDuration)}},
-    { id: 3, label: "close", active: true, onClick: function() { animationCloseActive = true; blockButtonsWithTimer(["open"], true, animationDuration); blockButtonsWithTimer(["close", "assembling", "unassembling", "move case"], false, animationDuration);}},
-    { id: 4, label: "assembling", active: false, onClick: function() { animationAssemblingActive = true; blockButtonsWithTimer(["assembling"], false, animationDuration); blockButtonsWithTimer(["close", "unassembling", "move case"], true, animationDuration);}},
-    { id: 5, label: "unassembling", active: true, onClick: function() { animationUnassemblingActive = true; blockButtonsWithTimer(["assembling"], true, animationDuration); blockButtonsWithTimer(["open", "close", "unassembling", "ring", "move case"], false, animationDuration);}},
+    { id: 2, label: "open", active: false, onClick: function() { animationOpenActive = true; blockButtonsWithTimer(["close", "unassembling", "horizontal move"], true, animationDuration); blockButtonsWithTimer(["open"], false, animationDuration)}},
+    { id: 3, label: "close", active: true, onClick: function() { animationCloseActive = true; blockButtonsWithTimer(["open"], true, animationDuration); blockButtonsWithTimer(["close", "assembling", "unassembling", "horizontal move"], false, animationDuration);}},
+    { id: 4, label: "assembling", active: false, onClick: function() { animationAssemblingActive = true; blockButtonsWithTimer(["assembling"], false, animationDuration); blockButtonsWithTimer(["close", "unassembling", "horizontal move", "vertical move"], true, animationDuration);}},
+    { id: 5, label: "unassembling", active: true, onClick: function() { animationUnassemblingActive = true; blockButtonsWithTimer(["assembling"], true, animationDuration); blockButtonsWithTimer(["open", "close", "unassembling", "vertical move", "horizontal move"], false, animationDuration);}},
     { id: 6, label: "run gears", active: true, onClick: function() { doGearsAnime(); blockButtonsWithTimer(["current time", "set time"], false, animationDuration);}},
-    { id: 7, label: "ring", active: true, onClick: function() { animationRingActive = true; blockButtonsWithTimer(["ring"], true, animationDuration);}},
-    { id: 8, label: "move case", active: true, onClick: function() { animationMoveCaseActive = true; blockButtonsWithTimer(["current time", "set time", "run gears"], true, animationDuration)}},
+    { id: 7, label: "vertical move", active: true, onClick: function() { animationRingActive = true; blockButtonsWithTimer(["vertical move", "horizontal move", "unassembling", "close"], true, animationDuration);}},
+    { id: 8, label: "horizontal move", active: true, onClick: function() { animationMoveCaseActive = true; blockButtonsWithTimer(["vertical move", "horizontal move", "unassembling", "close"], true, animationDuration)}},
     { id: 9, label: "set time", active: true, onClick: function() { animationSettimeActive = true; blockButtonsWithTimer(["current time", "set time", "run gears"], true, calculateSetTimeAnime())}}
   ];
+
 
   function blockButtonsWithTimer(buttonNames, useTimerToUnblock, manuelTime){
     buttonNames.forEach((btn) =>{
@@ -445,6 +455,7 @@ function update() {
     moveCase(deltaTime);
     runSetTime(deltaTime);
     renderer.render(scene, camera);
+    
 }
 
 update();
