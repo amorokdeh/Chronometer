@@ -8,9 +8,9 @@ This project is a digital recreation of a **maritime chronometer**, scanned with
 The project culminates in a web app built with **Three.js**, allowing users to interact with the chronometer via an intuitive interface, exploring its parts and receiving detailed information about its mechanisms.
 
 <p align="center">
-  <img src="assets/chronometer1.png" alt="Chronometer 1 Screenshot" width="300" height="300" />
-  <img src="assets/chronometer2.png" alt="Chronometer 2 Screenshot" width="300" height="300" />
-  <img src="assets/chronometer3.png" alt="Chronometer 2 Screenshot" width="300" height="300" />
+  <img src="assets/chronometer1.png" alt="Chronometer 1 Screenshot" width="200" height="200" />
+  <img src="assets/chronometer2.png" alt="Chronometer 2 Screenshot" width="200" height="200" />
+  <img src="assets/chronometer3.png" alt="Chronometer 2 Screenshot" width="200" height="200" />
 </p>
 
 ## 🔧 Technologies Used
